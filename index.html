@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DUI / VC Master Test</title>
+<style>
+body { font-family: Arial; background:#111; color:#eee; padding:20px; }
+.question { margin-bottom:18px; padding:10px; border:1px solid #333; }
+button { padding:12px; font-size:16px; margin-top:20px; }
+.correct { color: #00ff99; }
+.wrong { color: #ff6666; }
+</style>
+</head>
+<body>
+
+<h1>DUI & Vehicle Code Master Test</h1>
+<div id="quiz"></div>
+<button onclick="grade()">Submit Test</button>
+<div id="results"></div>
+
+<script>
+const quizData = [
+{q:"1. What is the legal definition of intoxication for people under 21 years of age?", a:[".02",".04",".08",".10"], c:0},
+{q:"2. At what BAC level does vision become impaired?", a:[".02-.04",".05-.06",".07-.09",".10-.12"], c:2},
+{q:"3. What is the legal definition of intoxication for people 21 years and older is BAC?", a:[".02",".04",".06",".08"], c:3},
+{q:"4. What three sections apply to DUI?", a:["1543,1547,3802","1531,1570,3900","1600,1700,3800","1400,1500,1600"], c:0},
+{q:"5. When providing a breath for the ignition interlock system must be less than:", a:[".02",".025",".04",".08"], c:1},
+{q:"6. What are the three phases of DUI enforcement?", a:["Stop,Search,Arrest","Vehicle in motion, Personal contact, Pre-arrest screening","Investigation, Arrest, Trial","Detection, Stop, Charge"], c:1},
+{q:"9. The field sobriety test must be one that is reasonably simple for the average person to complete if they were sober", a:["True","False","Sometimes","Only at night"], c:0},
+{q:"10. When should a field sobriety test not be given?", a:["When raining","Driver injured, probable cause exists, dangerous conditions","At night","If nervous"], c:1},
+{q:"11. Give two examples of divided attention test?", a:["Finger count, balance","Walk and turn, one leg test","Counting and reciting","Writing and speaking"], c:1},
+{q:"12. What should a person receiving a breath test not have prior to the first breath test?", a:["Water","Food","Any food or drinks","Medication"], c:2},
+{q:"15. A pedestrian is defined as:", a:["Any person in road","Individual afoot","Only adults","Only children"], c:1},
+{q:"16. A resident is a person dwelling permanently or continuously for a period exceeding:", a:["30 days","45 days","60 days","90 days"], c:2},
+{q:"17. Under the definition of state includes:", a:["Only US states","District of Columbia, PR, Canada province","Only territories","Only Canada"], c:1},
+{q:"18. The department can recall an operating privilege for reasons of:", a:["Speeding","Incompetency","Age","Criminal history"], c:1},
+{q:"19. All drivers should exhibit on demand:", a:["License only","Registration only","Insurance only","License, registration, insurance"], c:3},
+{q:"20. Difference between antique and classic vehicle?", a:["Use","Color","Age","Weight"], c:2},
+{q:"21. EPAMD stands for:", a:["Electric powered auto machine device","Electric personal assistive mobility device","Electronic personal auto movement device","Engine powered assisted motor device"], c:1},
+{q:"22. When prohibited means:", a:["Stopping anytime","Standing except receiving/discharging passengers","Parking always","Only loading"], c:1},
+{q:"23. How long to get new purchased vehicle inspected?", a:["5 days","7 days","10 days","30 days"], c:2},
+{q:"24. How many digits are in a VIN after 1981?", a:["14","15","16","17"], c:3},
+{q:"25. Where must signs be posted in a no passing zone?", a:["Beginning only","End only","Middle only","Beginning and end"], c:3},
+{q:"34. When making a turn under 35 mph must signal:", a:["50 ft","75 ft","100 ft","300 ft"], c:2},
+{q:"35. When making a turn over 35 mph must signal:", a:["100 ft","200 ft","300 ft","500 ft"], c:2},
+{q:"36. When meeting or overtaking a school bus stop within:", a:["5 ft","10 ft","15 ft","20 ft"], c:1},
+{q:"37. School bus operator may report violation within:", a:["24 hrs","48 hrs","72 hrs","7 days"], c:1},
+{q:"39. Conviction for passing school bus results in:", a:["Warning","2 points","5 points & 60 day suspension","Arrest"], c:2},
+{q:"42. Who must wear bike helmet?", a:["Under 10","Under 12","Under 15","All ages"], c:1},
+{q:"44. Child under 6 unattended in vehicle if vehicle out of sight:", a:["Allowed","Not allowed","Sometimes","Only daytime"], c:1},
+{q:"45. High beam rule approaching oncoming vehicle:", a:["100 ft","200 ft","300 ft","500 ft"], c:3},
+{q:"46. Max speed residential district:", a:["20 mph","25 mph","30 mph","35 mph"], c:1},
+{q:"47. Alcohol is a:", a:["Stimulant","Depressant","Hallucinogen","Narcotic"], c:1},
+{q:"50. Average BAC arrested in PA:", a:[".08",".12",".15",".17"], c:3},
+{q:"52. BAC for commercial vehicles:", a:[".02",".04",".06",".08"], c:1},
+{q:"56. BAC for minors and school drivers:", a:[".00",".01",".02",".04"], c:2},
+{q:"57. Age of adult for alcohol:", a:["18","19","20","21"], c:3},
+{q:"59. High rate of alcohol:", a:[".08-.09",".10-.16",".17-.20",".05-.07"], c:1},
+{q:"60. Walk & Turn provides:", a:["Balance only","Memory only","Balance, muscle control, memory","Speech only"], c:2},
+{q:"65. Observation before breath test:", a:["10 min","15 min","20 min","30 min"], c:2},
+{q:"68. What slows absorption of alcohol?", a:["Water","Coffee","Food","Air"], c:2},
+{q:"69. SFST examines:", a:["Balance, listening, coordination, speech","Eyes only","Reflex only","Memory only"], c:0},
+{q:"77. Driving in PA is:", a:["Right","Privilege","Optional","Contract"], c:1},
+{q:"79. Safe following distance on clear day:", a:["2 seconds","3 seconds","Reasonable and prudent","100 ft"], c:2},
+{q:"82. Combined weight vehicle & load is:", a:["Curb weight","Net weight","Gross weight","Payload"], c:2},
+{q:"83. Street for rear access:", a:["Road","Lane","Alley","Drive"], c:2},
+{q:"85. Classic vehicle age:", a:["10 yrs","15 yrs","20 yrs","25 yrs"], c:1},
+{q:"87. Most frequent reason for suspension:", a:["Speeding","DUI","Failure to pay fines","Reckless driving"], c:2},
+{q:"90. Who can remove inspection stickers?", a:["Only police","Police, salvors, windshield replacers","Only PennDOT","Any mechanic"], c:1},
+{q:"91. Transfer of ownership days:", a:["10","15","20","30"], c:2},
+{q:"97. Operating privilege means:", a:["Driving ability","Right to drive","Privilege to apply and obtain license","Vehicle ownership"], c:2},
+{q:"99. 15 or more for compensation:", a:["Bus","Mass transit vehicle","Taxi","Van"], c:1},
+{q:"105. Notify after 48 hrs abandoned vehicle:", a:["Police","Tow","Neighborhood services","PennDOT"], c:2},
+{q:"114. Timing device calibration:", a:["30 days","60 days","90 days","1 year"], c:1},
+{q:"120. Five factors for SFST:", a:["Age, obesity, dentures, speech, intelligence","Eyes, ears, nose, mouth, hands","Memory, balance, speech, sight, smell","None"], c:0},
+{q:"122. Speedometers checked within:", a:["6 months","1 year","2 years","5 years"], c:1},
+{q:"124. Action advisable but not required:", a:["Shall","May","Must","Should"], c:3},
+{q:"125. Limited access highway:", a:["Expressway","Turnpike","Freeway","Interstate"], c:2},
+{q:"126. Five functions of PennDOT include:", a:["Maintenance, safety regulation, traffic law regulation, records, inspection","Only roads","Only traffic","Only safety"], c:0},
+{q:"127. NOT authorized on limited highway:", a:["Truck","Motorcycle","Motorized pedalcycle","Bus"], c:2},
+{q:"128. Security interest holder:", a:["Owner","Lienholder","Dealer","Driver"], c:1},
+{q:"130. Limitation on backing up:", a:["3702","3332","1547","3802"], c:0},
+{q:"132. Slow moving vehicle emblem speed:", a:["20 mph","25 mph","30 mph","35 mph"], c:1},
+{q:"134. Three abilities evaluation:", a:["Exit, directions, standing","Eyes, ears, mouth","Balance only","Memory only"], c:0},
+{q:"135. Alcohol metabolized in liver:", a:["50%","60%","75%","90%"], c:3},
+{q:"136. No longer minor after:", a:["18","19","20","21"], c:3},
+{q:"138. Common DUI indicator:", a:["Speeding","Lane control","Following distance","Signals"], c:1}
+];
+
+const quizDiv=document.getElementById("quiz");
+
+quizData.forEach((q,i)=>{
+ let d=document.createElement("div");
+ d.className="question";
+ d.innerHTML=`<b>${q.q}</b><br>`+q.a.map((x,j)=>`<label><input type="radio" name="q${i}" value="${j}"> ${String.fromCharCode(65+j)}. ${x}</label><br>`).join("");
+ quizDiv.appendChild(d);
+});
+
+function grade(){
+ let score=0;
+ let resultHTML="<h2>Results</h2>";
+ quizData.forEach((q,i)=>{
+   let sel=document.querySelector(`input[name=q${i}]:checked`);
+   if(sel && Number(sel.value)==q.c){ score++; }
+   else{
+     resultHTML+=`<p class='wrong'>${q.q}<br>Your answer: ${sel? q.a[sel.value]:"None"}<br>Correct: <span class='correct'>${q.a[q.c]}</span></p>`;
+   }
+ });
+ resultHTML=`<h2>Score: ${score} / ${quizData.length}</h2>`+resultHTML;
+ document.getElementById("results").innerHTML=resultHTML;
+}
+</script>
+</body>
+</html>
